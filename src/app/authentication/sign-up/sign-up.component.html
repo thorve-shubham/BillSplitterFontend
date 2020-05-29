@@ -1,1 +1,65 @@
-<p>sign-up works!</p>
+<br><br>
+  <div class="row justify-content-md-center">
+      <div class="col-md-6">
+        <mat-card>
+          <br><br>
+          <p class="mat-display-2 " style="text-align: center;">
+            REGISTER
+          </p>
+          <form [formGroup]="signupFormGroup" (ngSubmit)="signup(signupFormGroup.value)">  
+                <mat-form-field class="example-full-width">
+                  <mat-label>First Name</mat-label>
+                  <input matInput formControlName="firstName">
+                  <mat-error [hidden]="!signupFormGroup.controls.firstName.touched || signupFormGroup.controls.firstName.valid">
+                    First Name is <strong>Required</strong>
+                  </mat-error>
+                 </mat-form-field>
+                <mat-form-field class="example-full-width">
+                    <mat-label>Last Name</mat-label>
+                    <input matInput formControlName="lastName">
+                    <mat-error [hidden]="!signupFormGroup.controls.lastName.touched || signupFormGroup.controls.lastName.valid">
+                    Last Name is <strong>Required</strong>
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="example-full-width">
+                  <mat-label>Email</mat-label>
+                  <input matInput formControlName="email"
+                        placeholder="Ex.John@xyz.com" >
+                  <mat-error [hidden]="!signupFormGroup.controls.email.touched || signupFormGroup.controls.email.valid">
+                    Email is <strong>Invalid</strong>
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field class="example-full-width">
+                  <mat-label>Password</mat-label>
+                  <input type="password" matInput formControlName="password">
+                  <mat-error [hidden]="!signupFormGroup.controls.password.touched || signupFormGroup.controls.password.valid">
+                    Password is <strong>Invalid</strong>
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field class="example-full-width">
+                  <mat-label>Confirm Password</mat-label>
+                  <input type="password" matInput formControlName="confirmPassword"
+                        placeholder="Ex.John Doe">
+                  <mat-error [hidden]="!signupFormGroup.controls.confirmPassword.touched || signupFormGroup.controls.confirmPassword.valid">
+                    Password is <strong>Not Matching</strong>
+                  </mat-error>
+                </mat-form-field>
+                <br>
+                <input type="text" ng2TelInput (intlTelInputObject)="telInputObject($event)"
+                (countryChange)="onCountryChange($event)"
+                 formControlName="mobile"/>
+                <mat-error [hidden]="!signupFormGroup.controls.mobile.touched || signupFormGroup.controls.mobile.valid">
+                    Mobile no. <strong>Invalid</strong>
+                </mat-error>
+              <br><br>
+              <button mat-raised-button [disabled]="signupFormGroup.invalid" color="primary" class="example-full-width" type="submit">Sign Up</button>
+              <br>
+              <mat-spinner diameter="30" *ngIf="loading"></mat-spinner>
+              <br>
+              <mat-card-subtitle>Already a member ? <a [routerLink]="['/auth/login']" style="cursor: pointer;color: #7b1fa2;">Log In</a></mat-card-subtitle>
+              <br><br>
+          </form>
+        </mat-card>
+      </div>
+  </div>
+

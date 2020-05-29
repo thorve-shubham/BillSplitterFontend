@@ -1,1 +1,44 @@
-<p>login works!</p>
+<div class="row justify-content-md-center">
+    <br>
+    <div class="col-md-6">
+        <br>
+        <br>
+        <mat-card>
+            <br><br>
+        
+            <p class="mat-display-2 " style="text-align: center;"> 
+                LOGIN
+            </p>
+            <form [formGroup]="loginFormGroup" (ngSubmit)="login(loginFormGroup.value)">
+                <mat-form-field class="example-full-width">
+                    <mat-label>Email</mat-label>
+                    <input matInput formControlName="email"
+                        placeholder="Ex. pat@example.com">
+                    <mat-error [hidden]="!loginFormGroup.controls.email.touched || loginFormGroup.controls.email.valid">
+                    Email is <strong>Invalid</strong>
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field  class="example-full-width">
+                    <mat-label>Password</mat-label>
+                    <input type="password" matInput formControlName="password">
+                    <mat-error [hidden]="!loginFormGroup.controls.password.touched || loginFormGroup.controls.password.valid">
+                        Password is <strong>Invalid</strong>
+                    </mat-error>
+                </mat-form-field>
+                <br><br>
+                <button class="example-full-width"type="submit" [disabled]="loginFormGroup.invalid" mat-raised-button color="primary">Log In</button>
+                <br>
+                <br>
+                <div class="d-flex justify-content-center">
+                    <mat-spinner *ngIf="loading" diameter="30"></mat-spinner>
+                </div>
+                
+                <br>
+                <mat-card-subtitle>Not a member ? <a [routerLink]="['/auth/signup']" style="cursor: pointer;color: #3f51b5;">Sign Up</a></mat-card-subtitle>
+                <mat-card-subtitle><a style="cursor: pointer;color: #3f51b5;" [routerLink]="['/auth/forgotPassword']">Forgot Password ?</a></mat-card-subtitle>
+                <br>
+            </form>
+        </mat-card>
+    </div>
+</div>
+
