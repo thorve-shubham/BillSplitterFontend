@@ -1,0 +1,18 @@
+<div class="row">
+    <div class="col-md-2">
+        <div class="d-flex justify-content-center">
+            <button mat-raised-button color="primary">Back</button>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <h3>Expenses</h3>
+        <h3>No Expenses Added</h3>
+    </div>
+    <div class="col-md-3">
+        <div class="d-flex justify-content-center">
+            <button mat-raised-button color="primary" [routerLink]='["/user/createExpense",groupId]'>
+                Create Expense
+            </button>
+        </div>
+    </div>
+</div>

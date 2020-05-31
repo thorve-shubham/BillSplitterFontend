@@ -13,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import {MatRadioModule} from '@angular/material/radio';
 
 const MaterialComponents = [
   MatFormFieldModule,
@@ -28,6 +29,7 @@ const MaterialComponents = [
   MatSnackBarModule,
   MatChipsModule,
   MatIconModule,
+  MatRadioModule
 ]
 
 @NgModule({

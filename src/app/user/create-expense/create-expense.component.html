@@ -1,0 +1,43 @@
+<div class="row">
+    <div class="col-md-2">
+        <div class="d-flex justify-content-center">
+            <button mat-raised-button color="primary">Back</button>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div *ngIf="!loading">
+            <h3 style="text-align: center;">Create Expense</h3>
+            <form [formGroup]="expenseFormGroup" (ngSubmit)="createExpense(expenseFormGroup.value)">
+                <mat-form-field class="example-full-width">
+                    <mat-label>Expense Name</mat-label>
+                    <input matInput formControlName=expenseName>
+                    <mat-error>
+                        Expense Name is <strong>Required</strong>
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="example-full-width">
+                    <mat-label>Expense Amount</mat-label>
+                    <input matInput type="number" formControlName="expenseAmount">
+                    <mat-error>
+                        Expense Amount is <strong>Required</strong>
+                    </mat-error>
+                </mat-form-field>
+                Who Paid ?<br><br>
+                <mat-radio-group aria-label="Select an option" [(ngModel)]="paidByForm" [value]="paidByForm" [ngModelOptions]="{standalone: true}">
+                    <span *ngFor="let user of users">
+                        <mat-radio-button [value]="user.id">{{ user.name}}</mat-radio-button><br>
+                    </span>
+                </mat-radio-group>
+                <br>
+                Share Amongst : (min 2 must be selected)<br><br>
+                <div class="scroll" style="text-align: left;">
+                    <div formArrayName="users" *ngFor="let user of formData.controls; let i = index">
+                        <input type="checkbox" [formControlName]="i">
+                        {{ users[i].name }} &nbsp;&nbsp;<br>
+                    </div>
+                </div>
+                <button mat-raised-button type="submit" [disabled]="expenseFormGroup.invalid" color="primary">Add To Group</button>
+            </form>
+        </div>
+    </div>
+</div>

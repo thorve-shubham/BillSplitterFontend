@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
-import * as jwt from 'jwt-decode';
+import * as jwt_decode from 'jwt-decode';
 import { AuthenticationService } from 'src/app/authentication.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 @Component({
@@ -18,16 +19,19 @@ export class ChangePasswordComponent implements OnInit {
   public cpFormGroup: FormGroup;
   public loading : boolean;
   public verified : boolean;
+  public tokenData : any;
 
   constructor(
     // private _router: Route,
     private router: ActivatedRoute,
     private formBuilder : FormBuilder,
-    private authService : AuthenticationService
+    private authService : AuthenticationService,
+    private _snackBar : MatSnackBar
   ) {
     this.verified = false;
     this.loading = false;
     this.authToken = router.snapshot.paramMap.get('authToken');
+    this.tokenData = jwt_decode(this.authToken);
   }
 
   ngOnInit(): void {
@@ -79,8 +83,27 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   changePassword(data){
-    this.loading = true
-    console.log(data);
+    this.loading = true;
+    let apiData = {
+      userId : this.tokenData.userId,
+      email : this.tokenData.email,
+      password : data.password,
+      authToken : this.authToken
+    }
+    this.authService.changePassword(apiData).subscribe(
+      (data)=>{
+        this.loading = false;
+        if(data['Error']){
+          this._snackBar.open(data['Message'],"Dismiss",{ duration : 3000 });
+        }else{
+          this._snackBar.open(data['Message'],"Dismiss",{ duration : 3000 });
+        }
+      },
+      (error)=>{
+        this.loading = false;
+        this._snackBar.open("Something went wrong","Dismiss",{ duration : 3000 });   
+      }
+    );
   }
 
 }

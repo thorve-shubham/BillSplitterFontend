@@ -58,4 +58,7 @@ export class AuthenticationService {
     return this._http.post("http://localhost:3000/user/forgotPassword",data);
   }
 
+  changePassword(data){
+    return this._http.post("http://localhost:3000/user/changePassword",data);
+  }
 }

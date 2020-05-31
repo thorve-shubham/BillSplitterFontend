@@ -1,1 +1,44 @@
-<p>dashboard works!</p>
+<div class="row">
+    <div class="col-md-3">
+        <mat-card style="margin-left: 10px;">
+            <mat-card-header>
+              <img mat-card-avatar src="../../../assets/user.jpg" class="example-header-image">
+              <mat-card-title>{{ userName }}</mat-card-title>
+              <mat-card-subtitle>{{ country }}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                Email : {{ email }}<br>
+                Contact : {{ mobile }}
+            </mat-card-content>
+          </mat-card>
+    </div>
+    <div class="col-md-7">
+        <div class="d-flex justify-content-center" *ngIf= "loading && !found">
+            Getting Groups..
+            <mat-spinner *ngIf="loading" diameter="30"></mat-spinner>
+        </div>
+        <div *ngIf="!loading && found">
+            <h3>Groups.....</h3>
+            <div class="row row-cols-3">
+                <div class='col' *ngFor='let group of groups'>
+                    <mat-card>
+                        <mat-card-header>
+                            <mat-card-title>{{ group.groupName}}</mat-card-title>
+                            <mat-card-subtitle>{{ group.createdOn | date}}</mat-card-subtitle>
+                          </mat-card-header>
+                          <mat-card-actions>
+                            <button mat-button color="accent" [routerLink]="['/user/viewGroup',group.groupId]">View</button>
+                          </mat-card-actions>
+                    </mat-card>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="!loading && !found">
+            <h3>No Group Found....</h3>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <button mat-raised-button color="primary" [routerLink]="['/user/createGroup']">Create Group</button>
+    </div>
+</div>
+
