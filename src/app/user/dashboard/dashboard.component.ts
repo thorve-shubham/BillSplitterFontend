@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/user.service';
+import { AuthenticationService } from 'src/app/authentication.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,7 +19,8 @@ export class DashboardComponent implements OnInit {
   public groups : [];
 
   constructor(
-    private userService : UserService
+    private userService : UserService,
+    private authService : AuthenticationService
   ) { 
     this.loading = true;
     this.found = false;
@@ -30,6 +32,7 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.authService.setLoginStatus(true);
     let apiData = {
       authToken : localStorage.getItem('authToken'),
       userId : this.userId

@@ -5,6 +5,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
 import * as _ from 'underscore';
 import { FormControl, FormBuilder, FormGroup, Validators, FormArray, ValidatorFn } from '@angular/forms';
+import { Location } from '@angular/common';
+import { AuthorizedService } from 'src/app/routeGuards/authorized.service';
+import { AuthenticationService } from 'src/app/authentication.service';
 
 @Component({
   selector: 'app-create-expense',
@@ -30,7 +33,9 @@ export class CreateExpenseComponent implements OnInit {
     private _router : Router,
     private userService : UserService,
     private _snackbar : MatSnackBar,
-    private formBuilder : FormBuilder
+    private formBuilder : FormBuilder,
+    private location : Location,
+    private authService : AuthenticationService
   ) {
     this.loading = true;
     this.paidByForm = null;
@@ -38,7 +43,12 @@ export class CreateExpenseComponent implements OnInit {
     console.log(this.groupId);
   }
 
+  goBack(){
+    this.location.back();
+  }
+
   ngOnInit(): void {
+    this.authService.setLoginStatus(true);
     let apiData = {
       authToken : localStorage.getItem('authToken'),
       groupId : this.groupId

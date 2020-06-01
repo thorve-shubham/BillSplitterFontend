@@ -34,4 +34,16 @@ export class UserService {
   getExpense(data){
     return this._http.post("http://localhost:3000/expense/getByGroupId",data);
   }
+
+  deleteExpense(data){
+    return this._http.post("http://localhost:3000/expense/deleteExpense",data);
+  }
+
+  getExpenseById(data){
+    return this._http.post("http://localhost:3000/expense/getByExpenseId",data);
+  }
+
+  updateExpense(data){
+    return this._http.post("http://localhost:3000/expense/updateExpense",data);
+  }
 }

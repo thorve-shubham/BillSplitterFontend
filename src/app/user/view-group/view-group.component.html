@@ -1,18 +1,74 @@
 <div class="row">
     <div class="col-md-2">
         <div class="d-flex justify-content-center">
-            <button mat-raised-button color="primary">Back</button>
+            <button mat-raised-button color="primary" (click)="goBack()">Back</button>
         </div>
     </div>
     <div class="col-md-7">
-        <h3>Expenses</h3>
-        <h3>No Expenses Added</h3>
+        <div *ngIf="loading && !found">
+            <div class="d-flex justify-content-center">
+                <mat-spinner diameter = "30"></mat-spinner>
+            </div>
+        </div>
+        <div *ngIf="!loading && found">
+            <h3>Expenses...</h3>
+            <div class="row row-cols-2">
+                <div class="col" *ngFor="let exp of expenses">
+                    <mat-card style="margin-top: 10px;">
+                        <mat-card-header>
+                            <mat-card-title>{{ exp.expenseName}}</mat-card-title>
+                            <mat-card-subtitle>{{ exp.createdOn | date}}</mat-card-subtitle>
+                          </mat-card-header>
+                          <mat-card-actions>
+                            <button mat-button color="accent" (click)="delete(exp.expenseId)">Delete</button>
+                            <button mat-button color="accent" [routerLink]="['/user/viewExpense',exp.expenseId]">View</button>
+                            <button mat-button color="accent" [routerLink]="['/user/editExpense',exp.expenseId]">Edit</button>
+                          </mat-card-actions>
+                    </mat-card>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="!loading && !found">
+            <h3>No Expenses Added Yet....</h3>
+        </div>
     </div>
     <div class="col-md-3">
         <div class="d-flex justify-content-center">
             <button mat-raised-button color="primary" [routerLink]='["/user/createExpense",groupId]'>
                 Create Expense
             </button>
+            <br>
+        </div>
+        <br>
+        <div *ngIf="!loading && found">
+            <mat-card style="margin-right: 15px;margin-top: 10px;">
+                <mat-card-header>
+                    <mat-card-title>
+                        Who Owes You...
+                    </mat-card-title>
+                </mat-card-header>
+                <div *ngFor="let member of groupMembers">
+                    <div *ngIf="member.userId != userId && member.owes !=0">
+                        <p>{{ member.userName }}</p>
+                        <p>{{ member.owes }}</p>
+                    </div>
+                </div>
+            </mat-card>
+            <mat-card style="margin-right: 15px;margin-top: 10px;">
+                <div *ngFor="let member of groupMembers">
+                    <div *ngIf="member.userId == userId">
+                        <mat-card-header>
+                            <mat-card-title>
+                                You owe...
+                            </mat-card-title>
+                        </mat-card-header>
+                        <div *ngFor="let data of member.owesArray">
+                            <p>{{ data.owsToName }}</p>
+                            <p>{{ data.oweAmount }}</p>
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
         </div>
     </div>
 </div>

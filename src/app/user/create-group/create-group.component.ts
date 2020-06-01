@@ -4,6 +4,8 @@ import { FormGroup, FormBuilder, Validators, FormArray, FormControl, ValidatorFn
 import * as _ from 'underscore';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
+import { AuthenticationService } from 'src/app/authentication.service';
 
 @Component({
   selector: 'app-create-group',
@@ -30,7 +32,9 @@ export class CreateGroupComponent implements OnInit {
     private userService : UserService,
     private formBuilder : FormBuilder,
     private _snackBar : MatSnackBar,
-    private router : Router
+    private router : Router,
+    private location : Location,
+    private authService : AuthenticationService
   ) { 
     this.found = false;
     this.creating = false;
@@ -42,6 +46,7 @@ export class CreateGroupComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.authService.setLoginStatus(true);
     this.loading = true;
     this.userService.getUsers().subscribe(
       (data)=>{
@@ -88,6 +93,10 @@ export class CreateGroupComponent implements OnInit {
     };
   
     return validator;
+  }
+
+  goBack(){
+    this.location.back();
   }
 
   get formData() { return <FormArray>this.groupFormGroup.get('usersHtml'); }
