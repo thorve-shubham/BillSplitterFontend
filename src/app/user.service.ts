@@ -46,4 +46,8 @@ export class UserService {
   updateExpense(data){
     return this._http.post("http://localhost:3000/expense/updateExpense",data);
   }
+
+  getHistory(data){
+    return this._http.post("http://localhost:3000/history/getHistory",data);
+  }
 }

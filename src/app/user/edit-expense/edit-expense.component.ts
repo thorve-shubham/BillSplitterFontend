@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from 'src/app/user.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -6,13 +6,16 @@ import { Location } from '@angular/common'
 import { FormBuilder, FormGroup, FormControl, FormArray, ValidatorFn } from '@angular/forms';
 import * as _ from 'underscore';
 import { AuthenticationService } from 'src/app/authentication.service';
+import { SocketService } from 'src/app/socket.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-edit-expense',
   templateUrl: './edit-expense.component.html',
-  styleUrls: ['./edit-expense.component.css']
+  styleUrls: ['./edit-expense.component.css'],
+  providers : [SocketService]
 })
-export class EditExpenseComponent implements OnInit {
+export class EditExpenseComponent implements OnInit,OnDestroy {
 
   public expenseId : string;
   public loading :boolean;
@@ -22,6 +25,8 @@ export class EditExpenseComponent implements OnInit {
   public group : any;
   public membersForm : FormGroup;
   public updating : boolean;
+  public socketObserver : Subscription;
+  public userId : string;
 
   constructor(
     private router : ActivatedRoute,
@@ -30,13 +35,18 @@ export class EditExpenseComponent implements OnInit {
     private _router : Router,
     private location : Location,
     private formBuilder : FormBuilder,
-    private authService : AuthenticationService
+    private authService : AuthenticationService,
+    private socketService : SocketService
   ) {
     this.found=false;
     this.loading = true;
     this.updating = false;
     this.expenseId = router.snapshot.paramMap.get('expenseId');
+    this.userId = localStorage.getItem('userId');
     console.log(this.expenseId);
+  }
+  ngOnDestroy(): void {
+    this.socketObserver.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -163,7 +173,18 @@ export class EditExpenseComponent implements OnInit {
       }
       this.userService.updateExpense(apiData).subscribe(
         (data)=>{
-          console.log(data);
+          this._snackBar.open(data["Message"],"Dismiss",{ duration : 3000});
+          let socketData = {
+            expenseId : this.expenseId,
+            userId : this.userId,
+            expenseName : data["Result"].expenseName
+          }
+          this.socketService.emit('expenseUpdated',socketData);
+          this.location.back();
+        },
+        (error)=>{
+          this._snackBar.open("Something went Wrong","Dismiss",{ duration : 3000});
+          this.location.back();
         }
       )
     }else{

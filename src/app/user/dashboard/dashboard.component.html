@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-3">
-        <mat-card style="margin-left: 10px;">
+        <mat-card style="margin-left: 10px;margin-right: 10px;">
             <mat-card-header>
               <img mat-card-avatar src="../../../assets/user.jpg" class="example-header-image">
               <mat-card-title>{{ userName }}</mat-card-title>
@@ -11,6 +11,7 @@
                 Contact : {{ mobile }}
             </mat-card-content>
           </mat-card>
+          <br>
     </div>
     <div class="col-md-7">
         <div class="d-flex justify-content-center" *ngIf= "loading && !found">
@@ -18,10 +19,10 @@
             <mat-spinner *ngIf="loading" diameter="30"></mat-spinner>
         </div>
         <div *ngIf="!loading && found">
-            <h3>Groups.....</h3>
+            <h3 style="margin-left: 10px;">Groups.....</h3>
             <div class="row row-cols-3">
                 <div class='col' *ngFor='let group of groups'>
-                    <mat-card>
+                    <mat-card style="margin-left: 5px;margin-right: 5px;">
                         <mat-card-header>
                             <mat-card-title>{{ group.groupName}}</mat-card-title>
                             <mat-card-subtitle>{{ group.createdOn | date}}</mat-card-subtitle>
@@ -36,9 +37,12 @@
         <div *ngIf="!loading && !found">
             <h3>No Group Found....</h3>
         </div>
+        <br>
     </div>
     <div class="col-md-2">
-        <button mat-raised-button color="primary" [routerLink]="['/user/createGroup']">Create Group</button>
+        <div class="d-flex justify-content-start">
+            <button mat-raised-button color="primary" [routerLink]="['/user/createGroup']">Create Group</button>
+        </div>
     </div>
 </div>
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from 'src/app/user.service';
 import { FormGroup, FormBuilder, Validators, FormArray, FormControl, ValidatorFn } from '@angular/forms';
 import * as _ from 'underscore';
@@ -6,13 +6,15 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { AuthenticationService } from 'src/app/authentication.service';
+import { Subscription } from 'rxjs';
+import { SocketService } from 'src/app/socket.service';
 
 @Component({
   selector: 'app-create-group',
   templateUrl: './create-group.component.html',
   styleUrls: ['./create-group.component.css']
 })
-export class CreateGroupComponent implements OnInit {
+export class CreateGroupComponent implements OnInit,OnDestroy {
 
   public userName : string;
   public userId : string;
@@ -25,6 +27,7 @@ export class CreateGroupComponent implements OnInit {
   public usersHtml = [];
   public groupFormGroup : FormGroup;
   public creating : boolean;
+  public socketObserver : Subscription;
 
   public groupName : string;
 
@@ -34,7 +37,8 @@ export class CreateGroupComponent implements OnInit {
     private _snackBar : MatSnackBar,
     private router : Router,
     private location : Location,
-    private authService : AuthenticationService
+    private authService : AuthenticationService,
+    private socketService : SocketService
   ) { 
     this.found = false;
     this.creating = false;
@@ -43,6 +47,9 @@ export class CreateGroupComponent implements OnInit {
     this.country = localStorage.getItem('country');
     this.email = localStorage.getItem('email');
     this.userId = localStorage.getItem('userId');
+  }
+  ngOnDestroy(): void {
+    this.socketObserver.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -62,6 +69,20 @@ export class CreateGroupComponent implements OnInit {
       (error)=>{
         this.loading = false;
         this.found = false;
+      }
+    )
+    this.setUpSocketListener();
+  }
+
+  setUpSocketListener(){
+    this.socketObserver = this.socketService.listenToEvent(this.userId).subscribe(
+      (data)=>{
+        if(data.userId != this.userId){
+          this._snackBar.open(data.Message,"Dismiss",{ duration : 3000 });
+        }
+      },
+      (error)=>{
+        this._snackBar.open("Something went Wrong","Dismiss",{ duration :3000 });
       }
     )
   }
@@ -115,6 +136,7 @@ export class CreateGroupComponent implements OnInit {
       createdBy : this.userId,
       members : selectedUsers,
       groupName : data.groupName,
+      userName : localStorage.getItem('userName')
     }
 
     this.userService.createGroup(apiData).subscribe(

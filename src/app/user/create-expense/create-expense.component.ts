@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from 'src/app/user.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -8,13 +8,16 @@ import { FormControl, FormBuilder, FormGroup, Validators, FormArray, ValidatorFn
 import { Location } from '@angular/common';
 import { AuthorizedService } from 'src/app/routeGuards/authorized.service';
 import { AuthenticationService } from 'src/app/authentication.service';
+import { SocketService } from 'src/app/socket.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-create-expense',
   templateUrl: './create-expense.component.html',
-  styleUrls: ['./create-expense.component.css']
+  styleUrls: ['./create-expense.component.css'],
+  providers : [SocketService]
 })
-export class CreateExpenseComponent implements OnInit {
+export class CreateExpenseComponent implements OnInit,OnDestroy {
 
   public groupId : string;
   public group : any;
@@ -22,11 +25,14 @@ export class CreateExpenseComponent implements OnInit {
   public adding : boolean;
   public users =[];
   public expenseFormGroup : FormGroup;
+  public socketObserver : Subscription;
 
   public expenseName : string;
   public expenseAmount : number;
   public paidByForm : string;
   public paidBy : string;
+
+  public userId : string;
 
   constructor(
     private router: ActivatedRoute,
@@ -35,20 +41,39 @@ export class CreateExpenseComponent implements OnInit {
     private _snackbar : MatSnackBar,
     private formBuilder : FormBuilder,
     private location : Location,
-    private authService : AuthenticationService
+    private authService : AuthenticationService,
+    private socketService : SocketService
   ) {
     this.loading = true;
     this.paidByForm = null;
     this.groupId = this.router.snapshot.paramMap.get('groupId');
+    this.userId = localStorage.getItem('userId');
     console.log(this.groupId);
+  }
+  ngOnDestroy(): void {
+    this.socketObserver.unsubscribe();
   }
 
   goBack(){
     this.location.back();
   }
 
+  setUpSocketListener(){
+    this.socketObserver = this.socketService.listenToEvent(this.userId).subscribe(
+      (data)=>{
+        if(data.userId != this.userId){
+          this._snackbar.open(data.Message,"Dismiss",{ duration : 3000 });
+        }
+      },
+      (error)=>{
+        this._snackbar.open("Something went Wrong","Dismiss",{ duration :3000 });
+      }
+    )
+  }
+
   ngOnInit(): void {
     this.authService.setLoginStatus(true);
+    this.setUpSocketListener();
     let apiData = {
       authToken : localStorage.getItem('authToken'),
       groupId : this.groupId
@@ -116,12 +141,19 @@ export class CreateExpenseComponent implements OnInit {
         expenseAmount : data.expenseAmount,
         paidBy : this.paidByForm,
         members : selectedUsers,
-        groupId : this.groupId
+        groupId : this.groupId,
+        userName : localStorage.getItem('userName')
       }
       this.userService.createExpense(apiData).subscribe(
         (data)=>{
           this.adding = false;
           this._snackbar.open(data['Message'],"Dismiss",{ duration : 3000 });
+          let SocketData = {
+            userId : this.userId,
+            expenseId : data["Result"].expenseId,
+            expenseName : data["Result"].expenseName
+          }
+          this.socketService.emit('expenseCreated',SocketData);
           this._router.navigate(['user/viewGroup',this.groupId]);
         },
         (error)=>{

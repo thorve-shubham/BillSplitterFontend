@@ -3,6 +3,16 @@
         <div class="d-flex justify-content-center">
             <button mat-raised-button color="primary" (click)="goBack()">Back</button>
         </div>
+        <br>
+        <mat-card style="margin-left: 10px;margin-top: 10px;margin-right: 10px;">
+            <h3>Members :</h3>
+            <div *ngFor="let member of groupMembers">
+                {{ member.userName }}<br>
+            </div>
+        </mat-card>
+        
+            
+        <br>
     </div>
     <div class="col-md-7">
         <div *ngIf="loading && !found">
@@ -10,11 +20,12 @@
                 <mat-spinner diameter = "30"></mat-spinner>
             </div>
         </div>
+        <strong><h2>Group : {{ groupName }}</h2></strong>
         <div *ngIf="!loading && found">
-            <h3>Expenses...</h3>
+            <h3 style="margin-left: 10px;">Expenses...</h3>
             <div class="row row-cols-2">
                 <div class="col" *ngFor="let exp of expenses">
-                    <mat-card style="margin-top: 10px;">
+                    <mat-card style="margin-top: 10px;margin-right: 5px;margin-left: 5px;">
                         <mat-card-header>
                             <mat-card-title>{{ exp.expenseName}}</mat-card-title>
                             <mat-card-subtitle>{{ exp.createdOn | date}}</mat-card-subtitle>
@@ -33,6 +44,7 @@
         </div>
     </div>
     <div class="col-md-3">
+        <br>
         <div class="d-flex justify-content-center">
             <button mat-raised-button color="primary" [routerLink]='["/user/createExpense",groupId]'>
                 Create Expense
@@ -41,7 +53,7 @@
         </div>
         <br>
         <div *ngIf="!loading && found">
-            <mat-card style="margin-right: 15px;margin-top: 10px;">
+            <mat-card style="margin-right: 10px;margin-top: 10px;margin-left: 10px;">
                 <mat-card-header>
                     <mat-card-title>
                         Who Owes You...
@@ -50,11 +62,11 @@
                 <div *ngFor="let member of groupMembers">
                     <div *ngIf="member.userId != userId && member.owes !=0">
                         <p>{{ member.userName }}</p>
-                        <p>{{ member.owes }}</p>
+                        <p>Rs.{{ member.owes }}</p>
                     </div>
                 </div>
             </mat-card>
-            <mat-card style="margin-right: 15px;margin-top: 10px;">
+            <mat-card style="margin-right: 10px;margin-top: 10px;margin-left: 10px;margin-bottom: 10px;">
                 <div *ngFor="let member of groupMembers">
                     <div *ngIf="member.userId == userId">
                         <mat-card-header>
@@ -64,7 +76,7 @@
                         </mat-card-header>
                         <div *ngFor="let data of member.owesArray">
                             <p>{{ data.owsToName }}</p>
-                            <p>{{ data.oweAmount }}</p>
+                            <p>Rs.{{ data.oweAmount }}</p>
                         </div>
                     </div>
                 </div>

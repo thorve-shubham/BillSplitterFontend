@@ -1,16 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from 'src/app/user.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Location } from '@angular/common';
 import { AuthenticationService } from 'src/app/authentication.service';
+import { SocketService } from 'src/app/socket.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-view-group',
   templateUrl: './view-group.component.html',
-  styleUrls: ['./view-group.component.css']
+  styleUrls: ['./view-group.component.css'],
+  providers : [SocketService]
 })
-export class ViewGroupComponent implements OnInit {
+export class ViewGroupComponent implements OnInit, OnDestroy {
 
   public groupId : string;
   public loading : boolean;
@@ -20,6 +23,8 @@ export class ViewGroupComponent implements OnInit {
   public groupMembers : any;
   public userId : string;
   public userName : string;
+  public socketObserver : Subscription;
+  public groupName : string;
 
   constructor(
     private router: ActivatedRoute,
@@ -27,7 +32,8 @@ export class ViewGroupComponent implements OnInit {
     private _snackbar : MatSnackBar,
     private location : Location,
     private _router : Router,
-    private authService : AuthenticationService
+    private authService : AuthenticationService,
+    private socketService : SocketService
   ) {
     this.loading = true;
     this.found = false;
@@ -36,10 +42,28 @@ export class ViewGroupComponent implements OnInit {
     this.userName = localStorage.getItem('userName');
     console.log(this.groupId);
    }
+  ngOnDestroy(): void {
+    this.socketObserver.unsubscribe();
+  }
 
   ngOnInit(): void {
     this.authService.setLoginStatus(true);
+    this.setUpSocketListener();
     this.loadExpenses();
+  }
+
+  setUpSocketListener(){
+    this.socketObserver = this.socketService.listenToEvent(this.userId).subscribe(
+      (data)=>{
+        if(data.userId != this.userId){
+          this._snackbar.open(data.Message,"Dismiss",{ duration : 3000 });
+          this.loadExpenses();
+        }
+      },
+      (error)=>{
+        this._snackbar.open("Something went Wrong","Dismiss",{ duration :3000 });
+      }
+    )
   }
 
   goBack(){
@@ -53,14 +77,14 @@ export class ViewGroupComponent implements OnInit {
       authToken : localStorage.getItem('authToken'),
       groupId : this.groupId
     }
-    console.log("ala");
     this.userService.getExpense(apiData).subscribe(
       (data)=>{
         this.loading =false;
         if(!data['Error']){
           this.found = true;
-          console.log('asdasd');
           this.expenses = data['Result'];
+          this.getGroupInfo();
+        }else{
           this.getGroupInfo();
         }
       },
@@ -86,6 +110,7 @@ export class ViewGroupComponent implements OnInit {
         }else{
           this.group = data["Result"];
           this.groupMembers = this.group.members;
+          this.groupName = this.group.groupName;
           this.calculate();
         }
       },
@@ -106,6 +131,16 @@ export class ViewGroupComponent implements OnInit {
       x.owes  =0;
     }
     for(let expense of this.expenses){
+      let present = false;
+      for(let temp of expense.members){
+        if(this.userId == temp.userId){
+          present = true;
+          break;
+        }
+      }
+      if(!present){
+        continue;
+      }
       if(expense.paidBy.userId == this.userId){
         oweAmount = (expense.expenseAmount/expense.members.length);
         oweAmount = Math.floor(oweAmount);
@@ -153,7 +188,8 @@ export class ViewGroupComponent implements OnInit {
     console.log(expenseId);
     let apiData = {
       authToken : localStorage.getItem('authToken'),
-      expenseId : expenseId
+      expenseId : expenseId,
+      userName : localStorage.getItem('userName')
     }
     this.userService.deleteExpense(apiData).subscribe(
       (data)=>{
@@ -162,6 +198,12 @@ export class ViewGroupComponent implements OnInit {
         }
         else{
           this._snackbar.open(data['Message'],"Dismiss", {duration : 3000});
+          let socketData = {
+            groupId : data["Result"].groupId,
+            userId : this.userId,
+            expenseName : data["Result"].expenseName
+          }
+          this.socketService.emit('expenseDeleted',socketData);
           this.loadExpenses();
         }
       },
