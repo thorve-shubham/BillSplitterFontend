@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./edit-expense.component.css'],
   providers : [SocketService]
 })
-export class EditExpenseComponent implements OnInit,OnDestroy {
+export class EditExpenseComponent implements OnInit, OnDestroy {
 
   public expenseId : string;
   public loading :boolean;
@@ -49,9 +49,25 @@ export class EditExpenseComponent implements OnInit,OnDestroy {
     this.socketObserver.unsubscribe();
   }
 
+
   ngOnInit(): void {
     this.authService.setLoginStatus(true);
     this.getExpense();
+  }
+
+  setUpSocketListener(){
+    this.socketObserver = this.socketService.listenToEvent(this.userId).subscribe(
+      (data)=>{
+        if(data.userId != this.userId && data.expenseId != this.expenseId){
+          this._snackBar.open(data.Message,"Dismiss",{ duration : 3000 });
+        }else if(data.expenseId == this.expenseId){
+          this.getExpense();
+        }
+      },
+      (error)=>{
+        this._snackBar.open("Something went Wrong","Dismiss",{ duration :3000 });
+      }
+    )
   }
 
   getExpense(){
@@ -69,7 +85,6 @@ export class EditExpenseComponent implements OnInit,OnDestroy {
           this.location.back();
         }else{
           this.expense = data['Result'];
-          console.log(this.expense);
           this.getGroupMembers(this.expense.groupId);
         }
       },

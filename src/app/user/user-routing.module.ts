@@ -11,10 +11,10 @@ import { EditExpenseComponent } from './edit-expense/edit-expense.component';
 const routes: Routes = [
   { path : 'dashboard' , component : DashboardComponent , canActivate : [AuthorizedService]},
   { path : 'createGroup' , component : CreateGroupComponent , canActivate : [AuthorizedService]},
-  { path : 'viewGroup/:groupId' , component : ViewGroupComponent},
-  { path : 'createExpense/:groupId' , component : CreateExpenseComponent},
-  { path : 'viewExpense/:expenseId' , component : ViewExpenseComponent},
-  { path : 'editExpense/:expenseId' , component : EditExpenseComponent}
+  { path : 'viewGroup/:groupId' , component : ViewGroupComponent , canActivate : [AuthorizedService]},
+  { path : 'createExpense/:groupId' , component : CreateExpenseComponent , canActivate : [AuthorizedService]},
+  { path : 'viewExpense/:expenseId' , component : ViewExpenseComponent , canActivate : [AuthorizedService]},
+  { path : 'editExpense/:expenseId' , component : EditExpenseComponent , canActivate : [AuthorizedService]}
 ];
 
 @NgModule({

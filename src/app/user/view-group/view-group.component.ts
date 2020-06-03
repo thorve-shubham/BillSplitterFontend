@@ -40,7 +40,6 @@ export class ViewGroupComponent implements OnInit, OnDestroy {
     this.groupId = router.snapshot.paramMap.get('groupId');
     this.userId = localStorage.getItem('userId');
     this.userName = localStorage.getItem('userName');
-    console.log(this.groupId);
    }
   ngOnDestroy(): void {
     this.socketObserver.unsubscribe();

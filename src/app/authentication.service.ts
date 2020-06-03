@@ -12,7 +12,7 @@ export class AuthenticationService {
   constructor(
     private _http : HttpClient
   ) { 
-    console.log("Service Started..")
+    
   }
 
   checkAuthToken(){
