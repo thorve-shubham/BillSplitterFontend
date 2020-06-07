@@ -99,7 +99,7 @@ export class ViewGroupComponent implements OnInit, OnDestroy {
     let apiData ={
       authToken : localStorage.getItem('authToken'),
       groupId : this.groupId
-    }
+    } 
 
     this.userService.getGroupInfo(apiData).subscribe(
       (data)=>{

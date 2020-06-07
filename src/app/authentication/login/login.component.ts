@@ -35,7 +35,6 @@ export class LoginComponent implements OnInit {
 
   login(data){
     this.loading = true;
-    console.log(data);
     this.authService.login(data).subscribe(
       (data)=>{
         this.loading = false;

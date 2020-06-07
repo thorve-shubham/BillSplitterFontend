@@ -8,7 +8,8 @@ export class SocketService implements OnDestroy{
   public socket : any;
 
   constructor() {
-    this.socket = io("http://localhost:3000/billSplitter");
+    // this.socket = io("http://localhost:3000/billSplitter");
+    this.socket = io("http://api.shubhamthorvetest.in/billSplitter");
   }
 
   emit(event,data){

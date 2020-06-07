@@ -48,7 +48,6 @@ export class CreateExpenseComponent implements OnInit,OnDestroy {
     this.paidByForm = null;
     this.groupId = this.router.snapshot.paramMap.get('groupId');
     this.userId = localStorage.getItem('userId');
-    console.log(this.groupId);
   }
   ngOnDestroy(): void {
     this.socketObserver.unsubscribe();
@@ -83,7 +82,6 @@ export class CreateExpenseComponent implements OnInit,OnDestroy {
         this.loading = false;
         if(!data["Error"]){
           this.group = data["Result"];
-          console.log(this.group);
           this.prepareForm();
         }else{
           this._snackbar.open(data["Message"],"Dismiss",{ duration : 3000});
@@ -128,7 +126,6 @@ export class CreateExpenseComponent implements OnInit,OnDestroy {
   }
 
   createExpense(data){
-    console.log(data);
     this.adding = true;
     const selectedUsers = this.expenseFormGroup.value.users
       .map((v, i) => v ? this.users[i].id : null)
@@ -136,7 +133,7 @@ export class CreateExpenseComponent implements OnInit,OnDestroy {
 
     if(_.contains(selectedUsers,this.paidByForm)){
       let apiData = {
-        authToken : localStorage.getItem('authTken'),
+        authToken : localStorage.getItem('authToken'),
         expenseName : data.expenseName,
         expenseAmount : data.expenseAmount,
         paidBy : this.paidByForm,

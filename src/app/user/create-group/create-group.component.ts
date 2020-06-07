@@ -12,7 +12,8 @@ import { SocketService } from 'src/app/socket.service';
 @Component({
   selector: 'app-create-group',
   templateUrl: './create-group.component.html',
-  styleUrls: ['./create-group.component.css']
+  styleUrls: ['./create-group.component.css'],
+  providers : [SocketService]
 })
 export class CreateGroupComponent implements OnInit,OnDestroy {
 
@@ -55,7 +56,10 @@ export class CreateGroupComponent implements OnInit,OnDestroy {
   ngOnInit(): void {
     this.authService.setLoginStatus(true);
     this.loading = true;
-    this.userService.getUsers().subscribe(
+    let apiData = {
+      authToken : localStorage.getItem('authToken')
+    }
+    this.userService.getUsers(apiData).subscribe(
       (data)=>{
         this.loading = false;
         if(data["Error"]){

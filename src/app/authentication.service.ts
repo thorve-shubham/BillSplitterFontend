@@ -21,7 +21,7 @@ export class AuthenticationService {
       localStorage.clear();
       return false;
     }else{
-      this._http.post("http://localhost:3000/token/verify",{authToken}).subscribe(
+      this._http.post("http://api.shubhamthorvetest.in/token/verify",{authToken}).subscribe(
         (data)=>{
           if(data['Error']){
             localStorage.clear();
@@ -35,15 +35,18 @@ export class AuthenticationService {
   }
 
   verifyToken(authToken){
-    return this._http.post("http://localhost:3000/token/verify",{authToken});
+    // return this._http.post("http://localhost:3000/token/verify",{authToken});
+    return this._http.post("http://api.shubhamthorvetest.in/token/verify",{authToken});
   }
 
   login(data){
-    return this._http.post("http://localhost:3000/user/login",data);
+    // return this._http.post("http://localhost:3000/user/login",data);
+    return this._http.post("http://api.shubhamthorvetest.in/user/login",data);
   }
 
   signup(data){
-    return this._http.post("http://localhost:3000/user/create",data);
+    // return this._http.post("http://localhost:3000/user/create",data);
+    return this._http.post("http://api.shubhamthorvetest.in/user/create",data);
   }
 
   setLoginStatus(status: boolean) {
@@ -55,10 +58,12 @@ export class AuthenticationService {
   }
 
   sendMail(data){
-    return this._http.post("http://localhost:3000/user/forgotPassword",data);
+    // return this._http.post("http://localhost:3000/user/forgotPassword",data);
+    return this._http.post("http://api.shubhamthorvetest.in/user/forgotPassword",data);
   }
 
   changePassword(data){
-    return this._http.post("http://localhost:3000/user/changePassword",data);
+    // return this._http.post("http://localhost:3000/user/changePassword",data);
+    return this._http.post("http://api.shubhamthorvetest.in/user/changePassword",data);
   }
 }
